@@ -125,8 +125,8 @@ class BanditMan:
 
         for t in range(self.time_out):
 
-            if t != 0:
-                p_exp = (self.k_bandits * np.log(self.time_out) / self.time_out) ** (1/3)
+            if t > self.k_bandits:
+                p_exp = t ** (-1/3)     # (self.k_bandits * np.log(self.time_out) / self.time_out) ** (1/3)
             else:
                 p_exp = 1
 
@@ -140,8 +140,8 @@ class BanditMan:
                 recorded_data[band_to_pull, t] = self.which_bandit[self.bandit_type](band_to_pull)
 
             else:
-                reward_vec = self.cum_rewards(recorded_data)
-                band_to_pull = np.argmax(reward_vec)
+                reward_vec = self.find_mean_reward(recorded_data[:, 0:t])
+                band_to_pull = np.argmax(reward_vec, axis=0)
                 e_greedy_pulls.append(band_to_pull)
 
                 recorded_data[band_to_pull, t] = self.which_bandit[self.bandit_type](band_to_pull)
